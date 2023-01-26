@@ -23,4 +23,4 @@ for i in range(number):
     x=f.readline().rstrip("\n").split()
     disMat.append(x)
 nD=np.array(list(map(conv,disMat)))
-print(nD)
+# print(nD,nC)
