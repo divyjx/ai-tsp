@@ -18,7 +18,7 @@ def conv(lis):
 nC=list(map(conv,Cities))
 np.set_printoptions(precision=11)
 nC=np.array(nC)
-global nD # change this afterwards
+global nD
 # print(nC)
 disMat=[]
 for i in range(number):
