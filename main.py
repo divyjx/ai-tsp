@@ -1,5 +1,7 @@
 import numpy as np
 import sys 
+from numpy import random
+import math
 # f=open(sys.argv[1],"r")
 f=open("euc_100","r")
 Cities=[]
@@ -63,5 +65,50 @@ nD=np.array(list(map(conv,disMat)))
 # 3 - mst and preorder approach
 
 # 4 Stimulated annealing - page 103
+# node=[for i in range(100)]
+node=[i for i in range(100)]
+
+def costEval(node):
+    cost=0
+    for x in range(len(node)):
+        From=node[x]
+        if x==99:
+            To=node[0]
+        else:
+            To=node[x+1]
+        cost+=nD[From][To]
+    return cost
+    
+def randomNeighbour():
+    p=random.permutation(np.array([i for i in range (100)]))
+    # print (p)
+    return p
+
+def Cooling(temp,time):
+    return 0.9 *temp
+def simAn():
+    Node=randomNeighbour()
+    bestNode=Node
+    print(costEval(bestNode))
+    Temp=100000000
+    M=100 # while loop termination
+    i=0
+    Epoch=200 # number of iterations at a temprature 
+    # Time=0
+    delE=0
+    for Time in range(1,Epoch):
+        while i!=M:
+            neighbours=randomNeighbour()
+            delE=costEval(neighbours)-costEval(Node)
+            exp=1/(1+pow(math.e,(-delE/Temp)))
+            print(exp)
+            if random.random()<exp:
+                Node=neighbours
+                if costEval(bestNode)>costEval(Node):
+                    bestNode=Node
+                Temp=Cooling(Temp,Time)
+            i+=1
+    return costEval(bestNode)
 
 
+print(simAn())
