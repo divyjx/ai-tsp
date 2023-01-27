@@ -18,6 +18,7 @@ def conv(lis):
 nC=list(map(conv,Cities))
 np.set_printoptions(precision=11)
 nC=np.array(nC)
+global nD # change this afterwards
 # print(nC)
 disMat=[]
 for i in range(number):
@@ -29,23 +30,28 @@ nD=np.array(list(map(conv,disMat)))
 # naive approach - minimum sussesive roots
 global visited
 visited=[]
-start=0
+start=9
 startCorr=nC[0]
 cost=0
-curr=0
-def mini(arr):
+curr=50
+def mini(curr):
     m=100000
     ind=0
-    for i in range(len(arr)):
+    for i in range(100):
         if i in visited:
             continue
-        if arr[i]<m:
-            m=arr[i]
+        if nD[curr][i]<m:
+            m=nD[curr][i]
             ind=i
-    return m,i        
+    return m,ind       
+i=0
 while len(visited)!=100:
-    visited.append[curr]
-    x=mini(nD[curr])
-    cost+=mini[0]
-    curr=mini[1]
-print(curr,cost)
+    if curr not in visited:
+        visited.append(curr)
+        x=mini(curr)
+        cost+=x[0]
+        curr=x[1]
+    i+=1
+# print(curr,cost)
+cost+=(nD[visited[-1]][0])
+print(visited,cost)
