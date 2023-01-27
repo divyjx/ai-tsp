@@ -60,4 +60,8 @@ nD=np.array(list(map(conv,disMat)))
 
 # 2 - brute force
 
+# 3 - mst and preorder approach
+
+# 4 Stimulated annealing - page 103
+
 
