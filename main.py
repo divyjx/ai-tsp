@@ -25,7 +25,7 @@ for i in range(number):
     x=f.readline().rstrip("\n").split()
     disMat.append(x)
 nD=np.array(list(map(conv,disMat)))
-print(nD,nC)
+# print(nD,nC)
 
 #1 naive approach - minimum sussesive roots
 
