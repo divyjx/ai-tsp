@@ -1,13 +1,10 @@
-import numpy as np
-# Code to Measure time taken by program to execute.
 import time
 
-# store starting time
-begin = time.time()
+start = time.time()
 
-# program body starts
-
-
+import numpy as np
+import sys 
+# f=open(sys.argv[1],"r")
 f=open("euc_100","r")
 Cities=[]
 name=f.readline().rstrip("\n")
@@ -25,24 +22,49 @@ def conv(lis):
 nC=list(map(conv,Cities))
 np.set_printoptions(precision=11)
 nC=np.array(nC)
-print(nC)
+global nD
+# print(nC)
 disMat=[]
 for i in range(number):
     x=f.readline().rstrip("\n").split()
     disMat.append(x)
 nD=np.array(list(map(conv,disMat)))
-print(nD)
+# print(nD,nC)
+
+# naive approach - minimum sussesive roots
+# global visited
+# visited=[]
+# start=9
+# startCorr=nC[0]
+# cost=0
+# curr=50
+# def mini(curr):
+#     m=100000
+#     ind=0
+#     for i in range(100):
+#         if i in visited:
+#             continue
+#         if nD[curr][i]<m:
+#             m=nD[curr][i]
+#             ind=i
+#     return m,ind       
+# i=0
+# while len(visited)!=5:
+#     if curr not in visited:
+#         visited.append(curr)
+#         x=mini(curr)
+#         cost+=x[0]
+#         curr=x[1]
+#     i+=1
+# # print(curr,cost)
+# cost+=(nD[visited[-1]][0])
+# # print(visited,cost)
 
 
-# program body ends
+# 2 - brute force
 
-time.sleep(1)
-# store end time
+
+
+
 end = time.time()
-
-# total time taken
-print(f"Total runtime of the program is {end - begin}")
-
-
-#nC=city coordinates
-#nD=city distance matrix
+print(end - start)
