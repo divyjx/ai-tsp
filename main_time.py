@@ -93,8 +93,8 @@ def randomNeighbour(Node):
 
 
 def Cooling(temp, time):
-    return temp*(0.99999**time)
-    # return temp*(0.99)
+    # return temp*(0.9999*time)
+    return temp*(0.999)
     # return temp*(0.99)
 
 
@@ -102,10 +102,10 @@ def simAn(node):
     Node = randomNeighbour(node)
     bestNode = Node
     print(costEval(bestNode))
-    Temp = 20000
+    Temp = 2000000
     M = 100  # while loop termination
     Epoch = 20000 # number of iterations at a temprature
-    Time = 0
+    Time = 1
     time = 1
     # for Time in range(1, Epoch):
     while Time!=Epoch:
@@ -150,21 +150,18 @@ def simAn(node):
 
                 delE = costEval(neighbours)-costEval(Node)
                 if delE<0:
-                    # exp = 1/(1+(math.exp(-delE/Temp)))
                     exp = 1/(1+(pow(math.e, (-delE/Temp))))
                     # exp = (pow(math.e, (-delE/Temp)))
-                    # print(exp)
+                    print(exp)
                 # print(delE)
                 else:
                      exp=1
                 if random.random() < exp :
                     Node = neighbours
-                    # print(costEval(Node))
                     if costEval(bestNode) > costEval(Node):
                         bestNode = Node
-                    # Temp = Cooling(Temp, Time)
-                    Temp = Temp-1
-                    print(Temp)
+                    Temp = Cooling(Temp, Time)
+                    # print(Temp)
                     Time+=1
 
                 # i += 1
