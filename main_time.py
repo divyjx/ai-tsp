@@ -1,38 +1,43 @@
+import sys
+import math
+from numpy import random
+import numpy as np
 import time
+import copy
 
 start = time.time()
-import numpy as np
-import sys 
-from numpy import random
-import math
 # f=open(sys.argv[1],"r")
-f=open("euc_100","r")
-Cities=[]
-name=f.readline().rstrip("\n")
-number=int(f.readline().rstrip("\n"))
+f = open("euc_100", "r")
+Cities = []
+name = f.readline().rstrip("\n")
+number = int(f.readline().rstrip("\n"))
 
 for i in range(number):
-    x=f.readline().rstrip("\n").split()
+    x = f.readline().rstrip("\n").split()
     Cities.append(x)
 # print(Cities)
+
+
 def conv(lis):
-    new=[]
+    new = []
     for x in lis:
         new.append(float(x))
-    return new    
-nC=list(map(conv,Cities))
+    return new
+
+
+nC = list(map(conv, Cities))
 np.set_printoptions(precision=11)
-nC=np.array(nC)
+nC = np.array(nC)
 global nD
 # print(nC)
-disMat=[]
+disMat = []
 for i in range(number):
-    x=f.readline().rstrip("\n").split()
+    x = f.readline().rstrip("\n").split()
     disMat.append(x)
-nD=np.array(list(map(conv,disMat)))
+nD = np.array(list(map(conv, disMat)))
 # print(nD,nC)
 
-#1 naive approach - minimum sussesive roots
+# 1 naive approach - minimum sussesive roots
 
 # global visited
 # visited=[]
@@ -49,7 +54,7 @@ nD=np.array(list(map(conv,disMat)))
 #         if nD[curr][i]<m:
 #             m=nD[curr][i]
 #             ind=i
-#     return m,ind       
+#     return m,ind
 # i=0
 # while len(visited)!=5:
 #     if curr not in visited:
@@ -68,62 +73,115 @@ nD=np.array(list(map(conv,disMat)))
 # 3 - mst and preorder approach
 
 # 4 Stimulated annealing - page 103
-# node=[for i in range(100)]
-node=[i for i in range(100)]
 
 def costEval(node):
-    cost=0
+    # print(node)
+    cost = 0
     for x in range(len(node)):
-        From=node[x]
-        if x==99:
-            To=node[0]
+        From = node[x]
+        if x == 99:
+            To = node[0]
         else:
-            To=node[x+1]
-        cost+=nD[From][To]
+            To = node[x+1]
+        cost += nD[From][To]
     return cost
-    
-def randomNeighbour():
-    p=random.permutation(np.array([i for i in range (100)]))
-    # print (p)
+
+
+def randomNeighbour(Node):
+    p = random.permutation(np.array([i for i in range(100)]))
     return p
 
-def Cooling(temp,time):
-    return temp*(0.9**time)
 
-def simAn():
-    Node=randomNeighbour()
-    bestNode=Node
+def Cooling(temp, time):
+    return temp*(0.99999**time)
+    # return temp*(0.99)
+    # return temp*(0.99)
+
+
+def simAn(node):
+    Node = randomNeighbour(node)
+    bestNode = Node
     print(costEval(bestNode))
-    Temp=1000000
-    M=200 # while loop termination
-    Epoch=10 # number of iterations at a temprature 
-    # Time=0
-    for Time in range(1,Epoch):
-        i=0
-        while i!=M:
-            neighbours=randomNeighbour()
-            if (costEval(neighbours)<8000):
-                        bestNode=neighbours
-                        break
-            delE=costEval(neighbours)-costEval(Node)
-            exp=1/(1+pow(math.e,(-delE/Temp)))
-            # if (exp<0.0010000000000001):
-            #     # return (costEval(bestNode),costEval(Node))
-            #     exp=0.001
-            print(exp)
-            if random.random()<exp:
-                Node=neighbours
-                if costEval(bestNode)>costEval(Node):
-                    bestNode=Node
-                    if (costEval(bestNode)<8000):
-                        break    
-                    # print(Temp,costEval(bestNode))
-                Temp=Cooling(Temp,Time)
-            i+=1
-    return costEval(bestNode)
+    Temp = 20000
+    M = 100  # while loop termination
+    Epoch = 20000 # number of iterations at a temprature
+    Time = 0
+    time = 1
+    # for Time in range(1, Epoch):
+    while Time!=Epoch:
+        try:
+            # i = 0
+            # while i != M:
+                # while Temp > M:
+
+                p = random.random()
+                if p <= 0.001:
+                    neighbours = randomNeighbour(Node)
+                elif 0.001 < p and p <= 0.5:  # swap
+                    neighbours = copy.deepcopy(Node)
+                    x = np.random.randint(0, 100)
+                    y = np.random.randint(0, 100)
+                    temp = neighbours[x]
+                    neighbours[x] = neighbours[y]
+                    neighbours[y] = temp
+                elif 0.5 < p and p <= 0.8:  # reverse
+                    neighbours = copy.deepcopy(Node)
+                    x = np.random.randint(0, 100)
+                    y = np.random.randint(0, 100)
+                    m = min(x, y)
+                    M = max(x, y)
+                    while m > M:
+                        temp = neighbours[m]
+                        neighbours[m] = neighbours[M]
+                        neighbours[M] = temp
+                        M -= 1
+                        m += 1
+                else:  # insert
+                    neighbours = copy.deepcopy(Node)
+                    x = np.random.randint(0, 100)
+                    y = np.random.randint(0, 100)
+                    m = min(x, y)
+                    M = max(x, y)
+                    temp = neighbours[m]
+                    # if M!=m:
+                    for i in range(m, M):
+                        neighbours[i] = neighbours[i+1]
+                    neighbours[M] = temp
+
+                delE = costEval(neighbours)-costEval(Node)
+                if delE<0:
+                    # exp = 1/(1+(math.exp(-delE/Temp)))
+                    exp = 1/(1+(pow(math.e, (-delE/Temp))))
+                    # exp = (pow(math.e, (-delE/Temp)))
+                    # print(exp)
+                # print(delE)
+                else:
+                     exp=1
+                if random.random() < exp :
+                    Node = neighbours
+                    # print(costEval(Node))
+                    if costEval(bestNode) > costEval(Node):
+                        bestNode = Node
+                    # Temp = Cooling(Temp, Time)
+                    Temp = Temp-1
+                    print(Temp)
+                    Time+=1
+
+                # i += 1
+        except KeyboardInterrupt:
+            return costEval(bestNode), exp, delE, Temp,Time
+            break
+
+        else:
+            continue
+    return costEval(bestNode), exp, delE, Temp,Time
 
 
-print(simAn())
+node = np.random.permutation([i for i in range(100)])
+print(simAn(node))
 
 end = time.time()
 print(end - start)
+
+
+# gradient desent algorithm in sa
