@@ -4,9 +4,7 @@ import numpy as np
 import sys
 import math
 from numpy import random
-import numpy as np
 import time
-import copy
 
 start = time.time()
 f=open(sys.argv[1],"r")
@@ -18,7 +16,6 @@ number = int(f.readline().rstrip("\n"))
 for i in range(number):
     x = f.readline().rstrip("\n").split()
     Cities.append(x)
-# print(Cities)
 
 
 def conv(lis):
@@ -128,9 +125,6 @@ class Graph():
                 visited.append(x[0])
                 visited.append(x[1])
         self.PMtree = copy.deepcopy(res)
-        # print(self.PMtree)
-        # if len(self.PMtree)==len(self.oddVertices)/2:
-        #     print("yes") --->> working
         return (self.PMtree)
 
     def EulerianTreeFinder(self):
@@ -146,7 +140,19 @@ class Graph():
         cost = 0
         for x in self.EuTree:
             cost += x[2]
+# e=open("eu_tree_edges.txt","r")
+# new=[]
+# for i in range(number):
+#     x=list(map(int,e.readline().rstrip("\n").split()))
+#     new.append(x)
 
+# # for x in range(number):
+# #     for y in range(x,number):
+# #         if [x,y] not in new: 
+# #             nDe[x][y]+=1000
+# for i in range(len(nDe)):
+#     if [nDe[i][0],nDe[i][1]] not in new:
+#         nDe[i][2]+=1000
 
 g = Graph(number, nDe)
 g.Kruskal()
@@ -158,14 +164,14 @@ g.EulerianTreeFinder()
 
 # # uncomment for ant colony opt with increased pheromones
 #
-# f=open("eu_tree_edges.txt","w")
-# res = copy.deepcopy(g.EuTree)
-# for x in res:
-#     for y in range(2) :
-#         f.write(str(x[y]) + " ")
-#     f.write ("\n")
+f=open("eu_tree_edges.txt","w")
+res = copy.deepcopy(g.EuTree)
+for x in res:
+    for y in range(2) :
+        f.write(str(x[y]) + " ")
+    f.write ("\n")
 
-
+# exit(0)
 class Eulertour:
     def __init__(self, vertices, Edges, root) -> None :
         self.adj = defaultdict(list)
@@ -203,6 +209,7 @@ class Eulertour:
         for i in range(2*self.vertices):
             path.append(int(self.Euler[i]))
         visi = []
+        self.path=path
         for x in path:
             if x not in visi:
                 visi.append(x)
@@ -224,15 +231,33 @@ class Eulertour:
 
 E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number))
 e = copy.deepcopy(E.getTour())
- 
+# curr_cost=20000
+# while True:
+#     path=copy.deepcopy(E.path)
+#     while len(path)!=number:
+#         p=np.random.randint(0,len(path))
+#         path.pop(p)
+#         # print(path.pop(p),end=" ")
+#     # print("")
+#     visi = []
+#     for x in path:
+#         if x not in visi:
+#             visi.append(x)
+#     if len(visi)==number:
+#         if(costEval(visi))<curr_cost:
+#             curr_cost=costEval(visi)
+#         print(curr_cost)
+
 try:
     Visited = np.array(e)
     start = time.time()
     end = time.time()
     curr = Visited
+    neighbours=0
     while (end - start < 300):
         p = random.random()
-        # p = 0.3
+        p = 0.31
+        del neighbours
         neighbours = copy.deepcopy(curr)
         x = np.random.randint(0, g.vertices)
         y = np.random.randint(0, g.vertices)

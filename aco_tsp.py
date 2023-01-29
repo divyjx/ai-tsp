@@ -20,7 +20,7 @@ class Problem():
         
         # self.KBest = int(0.1*number+1)
 
-        self.pheromones = [[0.1 for x in range(number)] for y in range(number)]
+        self.pheromones = [[0.0001 for x in range(number)] for y in range(number)]
         
         self.bestCost = float('Inf')
         self.bestTour = range(number)
@@ -30,7 +30,7 @@ class Problem():
 
 # Loop initialization
         try:
-            while time.time()-start < 298:
+            while time.time()-start < 250:
                 ants = []
 
                 delta_pheromones = [[0 for x in range(number)] for y in range(number)]
@@ -63,6 +63,9 @@ class Problem():
 
                 # if time.time()-self.lastChange > 300:
                 #     break
+            else:
+                print(self.bestCost)
+                print(*self.bestTour)
         except KeyboardInterrupt as e:
             print ("Interrupted on user demand.")
             print(self.bestCost)
@@ -134,9 +137,10 @@ for i in range(number):
 distances = np.array(list(map(conv,disMat)))
 
 # problem = Problem(distances, number, 3, 3, 0.1, 0.1)
-problem = Problem(distances, number, 5, 5, 0.1, 0.1)
-# e=open("eu_tree_edges.txt","r")
-# for i in range(number):
-#     x=list(map(int,e.readline().rstrip("\n").split()))
-#     problem.pheromones[x[0]][x[1]]+=1
+problem = Problem(distances, number, 1, 5, 0.6, 0.6)
+e=open("eu_tree_edges.txt","r")
+for i in range(number):
+    x=list(map(int,e.readline().rstrip("\n").split()))
+    problem.pheromones[x[0]][x[1]]+=1
+    problem.pheromones[x[1]][x[0]]+=1
 problem.AntColonyOptimization()
