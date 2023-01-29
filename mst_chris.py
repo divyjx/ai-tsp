@@ -9,8 +9,8 @@ import time
 import copy
 
 start = time.time()
-# f=open(sys.argv[1],"r")
-f = open("euc_100", "r")
+f=open(sys.argv[1],"r")
+# f = open("noneuc_500", "r")
 Cities = []
 name = f.readline().rstrip("\n")
 number = int(f.readline().rstrip("\n"))
@@ -45,9 +45,19 @@ for x in range(len(nD)):
         nDe.append([x, y, nD[x, y]])
 
 
+def costEval(node):
+    cost = 0
+    for x in range(number):
+        From = node[x]
+        if x == (number-1):
+            To = node[0]
+        else:
+            To = node[x+1]
+        cost += nD[From][To]
+    return cost
+
+
 class Graph():
-    # self.vertices
-    # edgeMatrix
     def __init__(self, nV, edges) -> None:
         self.vertices = nV  # number
         self.edges = copy.deepcopy(edges)  # edges (a,b,w)
@@ -72,7 +82,6 @@ class Graph():
         result = []
         i = 0
         e = 0
-        # print(self.edges)
         self.Kgraph = sorted(self.edges, key=lambda item: item[2])
         parent = [i for i in range(self.vertices)]
         rank = [0 for i in range(self.vertices)]
@@ -139,104 +148,120 @@ class Graph():
             cost += x[2]
 
 
-g = Graph(100, nDe)
+g = Graph(number, nDe)
 g.Kruskal()
 g.oddFinder()
 g.perfectMatching()
 g.EulerianTreeFinder()
 
-f=open("eu_tree_edges.txt","w")
-res = copy.deepcopy(g.EuTree)
-for x in res:
-    for y in x :
-        f.write(str(y) + " ")
-    f.write ("\n")
+# # g.EuTree -->> eulermultigraph or tree
 
-# dfs caculation
-
-
-# adj = defaultdict(list)
-# vis = defaultdict(bool)
-# Euler = [0]*(2*g.vertices)
-
-# def add_edge(u, v, w):
-#     adj[u].append((v, w))
-#     adj[v].append((u, w))
-
-# def eulerTree(u, index):
-#     vis[u] = True
-#     Euler[index] = u
-#     index += 1
-#     for nbr in adj[u]:
-#         if not vis[nbr[0]]:
-#             index = eulerTree(nbr[0], index)
-#             Euler[index] = u
-#             index += 1
-#     return index
-
-# def EulerTour(root, N):
-#     path = []
-#     index = 0
-#     eulerTree(root, index)
-#     for i in range(2*N-1):
-#         path.append(Euler[i])
-#     return path
-
-# for x in g.EuTree:
-#     add_edge(x[0], x[1], x[2])
-
-# ETP = EulerTour(1, g.vertices)
-# Visited = []
-
-# for x in ETP:
-#     if x not in Visited:
-#         Visited.append(x)
+# # uncomment for ant colony opt with increased pheromones
+#
+# f=open("eu_tree_edges.txt","w")
+# res = copy.deepcopy(g.EuTree)
+# for x in res:
+#     for y in range(2) :
+#         f.write(str(x[y]) + " ")
+#     f.write ("\n")
 
 
-# def costEval(node):
-#     cost = 0
-#     for x in range(len(node)):
-#         From = node[x]
-#         if x == 99:
-#             To = node[0]
-#         else:
-#             To = node[x+1]
-#         cost += nD[From][To]
-#     return cost
+class Eulertour:
+    def __init__(self, vertices, Edges, root) -> None :
+        self.adj = defaultdict(list)
+        self.vis = defaultdict(bool)
+        self.vertices = vertices
+        self.path = []
+        self.edges = copy.deepcopy(Edges)
+        self.addEdge()
+        self.Euler = [0]*(2*vertices)
+        self.root = root
+
+    def addEdge(self):
+        self.adj.clear
+        self.vis.clear
+        for u, v, w in self.edges:
+            self.adj[u].append(v)
+            self.adj[v].append(u)
+
+    def Tour(self, start, index):
+        self.vis[start] = True
+        self.Euler[index] = start
+        index += 1
+        for x in self.adj[start]:
+            if not self.vis[x]:
+                index = self.Tour(x, index)
+                self.Euler[index] = x
+                index += 1
+        return index
+
+    def getTour(self):
+        self.addEdge()
+        path = []
+        index = 0
+        self.Tour(self.root, index)
+        for i in range(2*self.vertices):
+            path.append(int(self.Euler[i]))
+        visi = []
+        for x in path:
+            if x not in visi:
+                visi.append(x)
+        return visi
 
 
-# Visited = np.array(Visited)
-# end = time.time()
-# curr = Visited
-# try:
-#     while (end - start < 200):
+# mini=100000000 
+# end=time.time()
+# while(end-start < 100 ):
+#     per = np.random.permutation(g.EuTree)
+#     E = Eulertour(g.vertices, per, np.random.randint(0, number))
+#     e = copy.deepcopy(E.getTour())
+#     del E,per
+#     c=costEval(e)
+#     if c<mini:
+#         mini=c 
+#     end=time.time()    
+# print(mini)
 
-#         p = random.random()
-#         p=0.4
-#         neighbours = copy.deepcopy(curr)
-#         x = np.random.randint(0, g.vertices)
-#         y = np.random.randint(0, g.vertices)
-#         z = np.random.randint(0, g.vertices)
-#         m = min(x, y,z)
-#         M = max(x, y,z)
-#         if p <= 0.5:  # swap
-#             temp = neighbours[x]
-#             neighbours[x] = neighbours[y]
-#             neighbours[y] = neighbours[z]
-#             neighbours[z] = temp
-#         else:  # insert
-#             temp = neighbours[m]
-#             for i in range(m, M):
-#                 neighbours[i] = neighbours[i+1]
-#             neighbours[M] = temp
-#         if costEval(neighbours) < costEval(curr):
-#             curr = neighbours
-#             print(costEval(curr))
-#         end = time.time()
-# except KeyboardInterrupt:
-#     print(costEval(curr), end-start)
+E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number))
+e = copy.deepcopy(E.getTour())
+ 
+try:
+    Visited = np.array(e)
+    start = time.time()
+    end = time.time()
+    curr = Visited
+    while (end - start < 300):
+        p = random.random()
+        # p = 0.3
+        neighbours = copy.deepcopy(curr)
+        x = np.random.randint(0, g.vertices)
+        y = np.random.randint(0, g.vertices)
+        z = np.random.randint(0, g.vertices)
+        m = min(x, y, z)
+        M = max(x, y, z)
+        if p <= 0.3:  # 2 swap
+            temp = neighbours[x]
+            neighbours[x] = neighbours[y]
+            neighbours[y] = temp
+        if p <= 0.6:  # 3 swap
+            temp = neighbours[x]
+            neighbours[x] = neighbours[y]
+            neighbours[y] = neighbours[z]
+            neighbours[z] = temp
+        else:  # insert
+            temp = neighbours[m]
+            for i in range(m, M):
+                neighbours[i] = neighbours[i+1]
+            neighbours[M] = temp
+        # if (costEval(neighbours) - costEval(curr)) < (-0.1*number):
+        if (costEval(neighbours) -  costEval(curr)) < 0:
+            curr = neighbours
+            print(costEval(curr))
+        end = time.time()
+except KeyboardInterrupt:
+    print(costEval(curr), end-start)
 # print(*curr)
-## print(costEval(Visited))
+path=curr
 
 
 ######      run mst_chris.py file first    #######

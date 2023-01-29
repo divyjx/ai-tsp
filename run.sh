@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/bin/bash 
 # echo "Hello World"
-
-python3 main.py $1
+python3 mst_chris.py "$1"
