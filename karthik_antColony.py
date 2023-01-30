@@ -31,17 +31,7 @@ class Problem():
 # Loop initialization
         try:
             while time.time()-start < 298:
-                # e=open("eu_tree_edges.txt","r")
-                # for i in range(number):
-                #     x=list(map(int,e.readline().rstrip("\n").split()))
-                #     self.pheromones[x[0]][x[1]]+=.5
-                #     self.pheromones[x[1]][x[0]]+=.5
-
-                # if time.time()-start > 100:
-                #     self.rho = 0.75
-                #     self.alpha, self.beta = 10, 10
                 ants = []
-
                 delta_pheromones = [[0 for x in range(number)] for y in range(number)]
 
                 for j in range(self.numAnts):
@@ -51,7 +41,6 @@ class Problem():
                     if ant.pathCost(self.distances) < self.bestCost:
                         self.bestCost = ant.pathCost(self.distances)
                         self.bestTour = ant.currentPath
-                        # self.lastChange = time.time()
                         print(f"Current Best Cost: {self.bestCost}")
                         # print(*self.bestTour, end="\n\n")
 
@@ -70,10 +59,8 @@ class Problem():
                         # pheromone at t=t+n
                         self.pheromones[i][j] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
                         #2
-                        # self.pheromones[j][i] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
+                        self.pheromones[j][i] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
 
-                # if time.time()-self.lastChange > 300:
-                #     break
         except KeyboardInterrupt as e:
             print ("Interrupted on user demand.")
             print(self.bestCost)
@@ -114,7 +101,7 @@ class Ant():
     def pathCost(self, distances):
         cost = 0
         for i in range(len(self.currentPath)):
-            cost += distances[self.currentPath[i]][self.currentPath[(i+1) % number]]
+            cost += distances[self.currPathent[i]][self.currentPath[(i+1) % number]]
         return cost
 
 

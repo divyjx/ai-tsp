@@ -281,7 +281,7 @@ try:
     neighbours=0
     while (end - start < 300):
         p = random.random()
-        # p = 0.9
+        # p = 0.4
         del neighbours
         neighbours = copy.deepcopy(curr)
         x = np.random.randint(0, g.vertices)
