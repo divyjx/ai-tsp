@@ -5,7 +5,7 @@ import sys
 import math
 from numpy import random
 import time
-
+import random
 start = time.time()
 f=open(sys.argv[1],"r")
 # f = open("noneuc_500", "r")
@@ -216,6 +216,7 @@ class Eulertour:
         return visi
 
 
+
 # mini=100000000 
 # end=time.time()
 # while(end-start < 100 ):
@@ -231,6 +232,30 @@ class Eulertour:
 
 E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number))
 e = copy.deepcopy(E.getTour())
+# while(1):
+#     freq=[0 for i in range(number)]
+#     paths=[]
+#     for x in E.path:
+#         x=int (x)
+#         paths.append(x)
+#         freq[x]+=1
+#     # paths=np.random.permutation(paths)
+#     for x in range(number):
+#         freq[x]-=1
+
+#     while(len(paths)!=number):
+
+#         wh=[i/sum(freq) for i in freq]
+#                 # J = random.choices(remainingCities, weights=probList_ij)[0] # highest prob is 0th element 
+#         x=random.choices([i for i in range(number)],weights=wh)[0]
+#         # print(x)
+#         # exit()
+#         freq[x]-=1
+#         paths=list(paths)
+#         paths.remove(x)
+
+    # print(costEval(paths))
+# exit(0)
 # curr_cost=20000
 # while True:
 #     path=copy.deepcopy(E.path)
@@ -256,23 +281,32 @@ try:
     neighbours=0
     while (end - start < 300):
         p = random.random()
-        p = 0.31
+        # p = 0.9
         del neighbours
         neighbours = copy.deepcopy(curr)
         x = np.random.randint(0, g.vertices)
         y = np.random.randint(0, g.vertices)
         z = np.random.randint(0, g.vertices)
+        a = np.random.randint(0, g.vertices)
+        b = np.random.randint(0, g.vertices)
         m = min(x, y, z)
         M = max(x, y, z)
         if p <= 0.3:  # 2 swap
             temp = neighbours[x]
             neighbours[x] = neighbours[y]
             neighbours[y] = temp
-        if p <= 0.6:  # 3 swap
+        elif p <= 0.6:  # 3 swap
             temp = neighbours[x]
             neighbours[x] = neighbours[y]
             neighbours[y] = neighbours[z]
             neighbours[z] = temp
+        # elif p <= 0.9:  # 3 swap
+        #     temp = neighbours[x]
+        #     neighbours[x] = neighbours[y]
+        #     neighbours[y] = neighbours[z]
+        #     neighbours[z] = neighbours[a]
+        #     neighbours[a] = neighbours[b]
+        #     neighbours[b] = temp
         else:  # insert
             temp = neighbours[m]
             for i in range(m, M):
