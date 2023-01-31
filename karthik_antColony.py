@@ -3,12 +3,13 @@ import sys
 import time
 import random
 import math
+import os
 
 
 # Function for Ant Colony
 class Problem():
 
-    def __init__(self, distances, numAnts, alpha, beta, rho, Q):
+    def __init__(self, distances, numAnts, alpha, beta, rho, Q, initP):
 
 # Initializations
         self.distances = distances
@@ -20,7 +21,7 @@ class Problem():
         
         # self.KBest = int(0.1*number+1)
 
-        self.pheromones = [[0.5 for x in range(number)] for y in range(number)]
+        self.pheromones = [[initP for x in range(number)] for y in range(number)]
         
         self.bestCost = float('Inf')
         self.bestTour = range(number)
@@ -52,19 +53,20 @@ class Problem():
                         nextCity = ant.currentPath[(ind+1)%number]
                         delta_pheromones[currCity][nextCity] += self.Q / distances[currCity][nextCity]
                         #1
-                        delta_pheromones[nextCity][currCity] += self.Q / distances[currCity][nextCity]
+                        # delta_pheromones[nextCity][currCity] += self.Q / distances[currCity][nextCity]
 
                 for i in range(number):
                     for j in range(number):
                         # pheromone at t=t+n
                         self.pheromones[i][j] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
                         #2
-                        self.pheromones[j][i] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
+                        # self.pheromones[j][i] = (1-self.rho)*self.pheromones[i][j] + delta_pheromones[i][j]
 
         except KeyboardInterrupt as e:
             print ("Interrupted on user demand.")
             print(self.bestCost)
             print(*self.bestTour)
+            print(self.pheromones)
 
 # Ant class structure defined
 
@@ -101,7 +103,7 @@ class Ant():
     def pathCost(self, distances):
         cost = 0
         for i in range(len(self.currentPath)):
-            cost += distances[self.currPathent[i]][self.currentPath[(i+1) % number]]
+            cost += distances[self.currentPath[i]][self.currentPath[(i+1) % number]]
         return cost
 
 
@@ -137,11 +139,12 @@ distances = np.array(list(map(conv,disMat)))
 # problem = Problem(distances, number, 3, 3, 0.99, 0.99)
 
 
-problem = Problem(distances, number, 5, 5, 0.75, 0.75)
-# e=open("eu_tree_edges.txt","r")
-# for i in range(number):
-#     x=list(map(int,e.readline().rstrip("\n").split()))
-#     problem.pheromones[x[0]][x[1]]+=.5
-#     problem.pheromones[x[1]][x[0]]+=.5
+problem = Problem(distances, number, 10, 10, 0.1, 50,50)
+os.system(f'python mst_chris.py {sys.argv[1]}')
+e=open("eu_tree_edges.txt","r")
+for i in range(number):
+    x=list(map(int,e.readline().rstrip("\n").split()))
+    problem.pheromones[x[0]][x[1]]+=50
+    problem.pheromones[x[1]][x[0]]+=50
 
 problem.AntColonyOptimization()

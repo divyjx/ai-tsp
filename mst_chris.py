@@ -170,159 +170,161 @@ for x in res:
     for y in range(2) :
         f.write(str(x[y]) + " ")
     f.write ("\n")
-
+print("here")
+if __name__=="__main__":
 # exit(0)
-class Eulertour:
-    def __init__(self, vertices, Edges, root) -> None :
-        self.adj = defaultdict(list)
-        self.vis = defaultdict(bool)
-        self.vertices = vertices
-        self.path = []
-        self.edges = copy.deepcopy(Edges)
-        self.addEdge()
-        self.Euler = [0]*(2*vertices)
-        self.root = root
+    print("not here")
+    class Eulertour:
+        def __init__(self, vertices, Edges, root) -> None :
+            self.adj = defaultdict(list)
+            self.vis = defaultdict(bool)
+            self.vertices = vertices
+            self.path = []
+            self.edges = copy.deepcopy(Edges)
+            self.addEdge()
+            self.Euler = [0]*(2*vertices)
+            self.root = root
 
-    def addEdge(self):
-        self.adj.clear
-        self.vis.clear
-        for u, v, w in self.edges:
-            self.adj[u].append(v)
-            self.adj[v].append(u)
+        def addEdge(self):
+            self.adj.clear
+            self.vis.clear
+            for u, v, w in self.edges:
+                self.adj[u].append(v)
+                self.adj[v].append(u)
 
-    def Tour(self, start, index):
-        self.vis[start] = True
-        self.Euler[index] = start
-        index += 1
-        for x in self.adj[start]:
-            if not self.vis[x]:
-                index = self.Tour(x, index)
-                self.Euler[index] = x
-                index += 1
-        return index
+        def Tour(self, start, index):
+            self.vis[start] = True
+            self.Euler[index] = start
+            index += 1
+            for x in self.adj[start]:
+                if not self.vis[x]:
+                    index = self.Tour(x, index)
+                    self.Euler[index] = x
+                    index += 1
+            return index
 
-    def getTour(self):
-        self.addEdge()
-        path = []
-        index = 0
-        self.Tour(self.root, index)
-        for i in range(2*self.vertices):
-            path.append(int(self.Euler[i]))
-        visi = []
-        self.path=path
-        for x in path:
-            if x not in visi:
-                visi.append(x)
-        return visi
+        def getTour(self):
+            self.addEdge()
+            path = []
+            index = 0
+            self.Tour(self.root, index)
+            for i in range(2*self.vertices):
+                path.append(int(self.Euler[i]))
+            visi = []
+            self.path=path
+            for x in path:
+                if x not in visi:
+                    visi.append(x)
+            return visi
 
 
 
-# mini=100000000 
-# end=time.time()
-# while(end-start < 100 ):
-#     per = np.random.permutation(g.EuTree)
-#     E = Eulertour(g.vertices, per, np.random.randint(0, number))
-#     e = copy.deepcopy(E.getTour())
-#     del E,per
-#     c=costEval(e)
-#     if c<mini:
-#         mini=c 
-#     end=time.time()    
-# print(mini)
+    # mini=100000000 
+    # end=time.time()
+    # while(end-start < 100 ):
+    #     per = np.random.permutation(g.EuTree)
+    #     E = Eulertour(g.vertices, per, np.random.randint(0, number))
+    #     e = copy.deepcopy(E.getTour())
+    #     del E,per
+    #     c=costEval(e)
+    #     if c<mini:
+    #         mini=c 
+    #     end=time.time()    
+    # print(mini)
 
-E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number))
-e = copy.deepcopy(E.getTour())
-# while(1):
-#     freq=[0 for i in range(number)]
-#     paths=[]
-#     for x in E.path:
-#         x=int (x)
-#         paths.append(x)
-#         freq[x]+=1
-#     # paths=np.random.permutation(paths)
-#     for x in range(number):
-#         freq[x]-=1
+    E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number-1))
+    e = copy.deepcopy(E.getTour())
+    # while(1):
+    #     freq=[0 for i in range(number)]
+    #     paths=[]
+    #     for x in E.path:
+    #         x=int (x)
+    #         paths.append(x)
+    #         freq[x]+=1
+    #     # paths=np.random.permutation(paths)
+    #     for x in range(number):
+    #         freq[x]-=1
 
-#     while(len(paths)!=number):
+    #     while(len(paths)!=number):
 
-#         wh=[i/sum(freq) for i in freq]
-#                 # J = random.choices(remainingCities, weights=probList_ij)[0] # highest prob is 0th element 
-#         x=random.choices([i for i in range(number)],weights=wh)[0]
-#         # print(x)
-#         # exit()
-#         freq[x]-=1
-#         paths=list(paths)
-#         paths.remove(x)
+    #         wh=[i/sum(freq) for i in freq]
+    #                 # J = random.choices(remainingCities, weights=probList_ij)[0] # highest prob is 0th element 
+    #         x=random.choices([i for i in range(number)],weights=wh)[0]
+    #         # print(x)
+    #         # exit()
+    #         freq[x]-=1
+    #         paths=list(paths)
+    #         paths.remove(x)
 
-    # print(costEval(paths))
-# exit(0)
-# curr_cost=20000
-# while True:
-#     path=copy.deepcopy(E.path)
-#     while len(path)!=number:
-#         p=np.random.randint(0,len(path))
-#         path.pop(p)
-#         # print(path.pop(p),end=" ")
-#     # print("")
-#     visi = []
-#     for x in path:
-#         if x not in visi:
-#             visi.append(x)
-#     if len(visi)==number:
-#         if(costEval(visi))<curr_cost:
-#             curr_cost=costEval(visi)
-#         print(curr_cost)
+        # print(costEval(paths))
+    # exit(0)
+    # curr_cost=20000
+    # while True:
+    #     path=copy.deepcopy(E.path)
+    #     while len(path)!=number:
+    #         p=np.random.randint(0,len(path))
+    #         path.pop(p)
+    #         # print(path.pop(p),end=" ")
+    #     # print("")
+    #     visi = []
+    #     for x in path:
+    #         if x not in visi:
+    #             visi.append(x)
+    #     if len(visi)==number:
+    #         if(costEval(visi))<curr_cost:
+    #             curr_cost=costEval(visi)
+    #         print(curr_cost)
 
-try:
-    Visited = np.array(e)
-    start = time.time()
-    end = time.time()
-    curr = Visited
-    neighbours=0
-    while (end - start < 300):
-        p = random.random()
-        # p = 0.4
-        del neighbours
-        neighbours = copy.deepcopy(curr)
-        x = np.random.randint(0, g.vertices)
-        y = np.random.randint(0, g.vertices)
-        z = np.random.randint(0, g.vertices)
-        a = np.random.randint(0, g.vertices)
-        b = np.random.randint(0, g.vertices)
-        m = min(x, y, z)
-        M = max(x, y, z)
-        if p <= 0.3:  # 2 swap
-            temp = neighbours[x]
-            neighbours[x] = neighbours[y]
-            neighbours[y] = temp
-        elif p <= 0.6:  # 3 swap
-            temp = neighbours[x]
-            neighbours[x] = neighbours[y]
-            neighbours[y] = neighbours[z]
-            neighbours[z] = temp
-        # elif p <= 0.9:  # 3 swap
-        #     temp = neighbours[x]
-        #     neighbours[x] = neighbours[y]
-        #     neighbours[y] = neighbours[z]
-        #     neighbours[z] = neighbours[a]
-        #     neighbours[a] = neighbours[b]
-        #     neighbours[b] = temp
-        else:  # insert
-            temp = neighbours[m]
-            for i in range(m, M):
-                neighbours[i] = neighbours[i+1]
-            neighbours[M] = temp
-        # if (costEval(neighbours) - costEval(curr)) < (-0.1*number):
-        if (costEval(neighbours) -  costEval(curr)) < 0:
-            curr = neighbours
-            print(costEval(curr))
+    try:
+        Visited = np.array(e)
+        start = time.time()
         end = time.time()
-except KeyboardInterrupt:
-    print(costEval(curr), end-start)
-# print(*curr)
-path=curr
+        curr = Visited
+        neighbours=0
+        while (end - start < 300):
+            p = random.random()
+            # p = 0.4
+            del neighbours
+            neighbours = copy.deepcopy(curr)
+            x = np.random.randint(0, g.vertices-1)
+            y = np.random.randint(0, g.vertices-1)
+            z = np.random.randint(0, g.vertices-1)
+            a = np.random.randint(0, g.vertices-1)
+            b = np.random.randint(0, g.vertices-1)
+            m = min(x, y, z)
+            M = max(x, y, z)
+            if p <= 0.3:  # 2 swap
+                temp = neighbours[x]
+                neighbours[x] = neighbours[y]
+                neighbours[y] = temp
+            elif p <= 0.6:  # 3 swap
+                temp = neighbours[x]
+                neighbours[x] = neighbours[y]
+                neighbours[y] = neighbours[z]
+                neighbours[z] = temp
+            # elif p <= 0.9:  # 3 swap
+            #     temp = neighbours[x]
+            #     neighbours[x] = neighbours[y]
+            #     neighbours[y] = neighbours[z]
+            #     neighbours[z] = neighbours[a]
+            #     neighbours[a] = neighbours[b]
+            #     neighbours[b] = temp
+            else:  # insert
+                temp = neighbours[m]
+                for i in range(m, M):
+                    neighbours[i] = neighbours[i+1]
+                neighbours[M] = temp
+            # if (costEval(neighbours) - costEval(curr)) < (-0.1*number):
+            if (costEval(neighbours) -  costEval(curr)) < 0:
+                curr = neighbours
+                print(costEval(curr))
+            end = time.time()
+    except KeyboardInterrupt:
+        print(costEval(curr), end-start)
+    # print(*curr)
+    path=curr
 
 
-######      run mst_chris.py file first    #######
-######    res list stores all euler edges  #######
-###### euler_tree_edges.txt contains edges #######
+    ######      run mst_chris.py file first    #######
+    ######    res list stores all euler edges  #######
+    ###### euler_tree_edges.txt contains edges #######
