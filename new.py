@@ -1,44 +1,46 @@
-from collections import defaultdict
-import copy
 import numpy as np
-import sys
-from numpy import random
+import sys 
 import time
 import random
-start = time.time()
-f=open(sys.argv[1],"r")
-# f = open("noneuc_500", "r")
-Cities = []
-name = f.readline().rstrip("\n")
-number = int(f.readline().rstrip("\n"))
+import copy
+from collections import defaultdict
+
+f=open(sys.argv[1], "r")
+start = time.time() 
+# f=open("noneuc_250","r")
+Cities=[]
+name=f.readline().rstrip("\n")
+number=int(f.readline().rstrip("\n"))
 
 for i in range(number):
-    x = f.readline().rstrip("\n").split()
+    x=f.readline().rstrip("\n").split()
     Cities.append(x)
-
-
+# print(Cities)
 def conv(lis):
-    new = []
+    new=[]
     for x in lis:
         new.append(float(x))
-    return new
+    return new    
+nC=list(map(conv,Cities))
 
-
-nC = list(map(conv, Cities))
 np.set_printoptions(precision=11)
-nC = np.array(nC)
-global nD
+nC=np.array(nC)
+global distances
 # print(nC)
-disMat = []
+disMat=[]
 for i in range(number):
-    x = f.readline().rstrip("\n").split()
+    x=f.readline().rstrip("\n").split()
     disMat.append(x)
-nD = np.array(list(map(conv, disMat)))
+
+
+#initializations
+distances = np.array(list(map(conv,disMat)))
+pheromones = [[0.1 for i in range(number)] for j in range(number)]
 
 nDe = []
-for x in range(len(nD)):
-    for y in range(x+1, len(nD)):
-        nDe.append([x, y, nD[x, y]])
+for x in range(len(distances)):
+    for y in range(x+1, len(distances)):
+        nDe.append([x, y, distances[x, y]])
 
 
 def costEval(node):
@@ -49,7 +51,7 @@ def costEval(node):
             To = node[0]
         else:
             To = node[x+1]
-        cost += nD[From][To]
+        cost += distances[From][To]
     return cost
 
 
@@ -139,40 +141,7 @@ class Graph():
         cost = 0
         for x in self.EuTree:
             cost += x[2]
-# e=open("eu_tree_edges.txt","r")
-# new=[]
-# for i in range(number):
-#     x=list(map(int,e.readline().rstrip("\n").split()))
-#     new.append(x)
 
-# # for x in range(number):
-# #     for y in range(x,number):
-# #         if [x,y] not in new: 
-# #             nDe[x][y]+=1000
-# for i in range(len(nDe)):
-#     if [nDe[i][0],nDe[i][1]] not in new:
-#         nDe[i][2]+=1000
-
-g = Graph(number, nDe)
-g.Kruskal()
-g.oddFinder()
-g.perfectMatching()
-g.EulerianTreeFinder()
-
-# # g.EuTree -->> eulermultigraph or tree
-
-# # uncomment for ant colony opt with increased pheromones
-#
-f=open("eu_tree_edges.txt","w")
-res = copy.deepcopy(g.EuTree)
-for x in res:
-    for y in range(2) :
-        f.write(str(x[y]) + " ")
-    f.write ("\n")
-print("here")
-# if __name__=="__main__":
-# exit(0)
-print("not here")
 class Eulertour:
     def __init__(self, vertices, Edges, root) -> None :
         self.adj = defaultdict(list)
@@ -217,77 +186,34 @@ class Eulertour:
         return visi
 
 
-
-    # mini=100000000 
-    # end=time.time()
-    # while(end-start < 100 ):
-    #     per = np.random.permutation(g.EuTree)
-    #     E = Eulertour(g.vertices, per, np.random.randint(0, number))
-    #     e = copy.deepcopy(E.getTour())
-    #     del E,per
-    #     c=costEval(e)
-    #     if c<mini:
-    #         mini=c 
-    #     end=time.time()    
-    # print(mini)
+g = Graph(number, nDe)
+g.Kruskal()
+g.oddFinder()
+g.perfectMatching()
+g.EulerianTreeFinder()
 
 E = Eulertour(g.vertices, sorted(g.EuTree,key=lambda item:item[2]), np.random.randint(0, number-1))
 e = copy.deepcopy(E.getTour())
-    # while(1):
-    #     freq=[0 for i in range(number)]
-    #     paths=[]
-    #     for x in E.path:
-    #         x=int (x)
-    #         paths.append(x)
-    #         freq[x]+=1
-    #     # paths=np.random.permutation(paths)
-    #     for x in range(number):
-    #         freq[x]-=1
 
-    #     while(len(paths)!=number):
+def tourCost(path):
+    cost = 0
+    for i in range(number):
+        cost += distances[path[i]][path[(i+1)%number]]
+    return cost
 
-    #         wh=[i/sum(freq) for i in freq]
-    #                 # J = random.choices(remainingCities, weights=probList_ij)[0] # highest prob is 0th element 
-    #         x=random.choices([i for i in range(number)],weights=wh)[0]
-    #         # print(x)
-    #         # exit()
-    #         freq[x]-=1
-    #         paths=list(paths)
-    #         paths.remove(x)
-
-        # print(costEval(paths))
-    # exit(0)
-    # curr_cost=20000
-    # while True:
-    #     path=copy.deepcopy(E.path)
-    #     while len(path)!=number:
-    #         p=np.random.randint(0,len(path))
-    #         path.pop(p)
-    #         # print(path.pop(p),end=" ")
-    #     # print("")
-    #     visi = []
-    #     for x in path:
-    #         if x not in visi:
-    #             visi.append(x)
-    #     if len(visi)==number:
-    #         if(costEval(visi))<curr_cost:
-    #             curr_cost=costEval(visi)
-    #         print(curr_cost)
-
-try:
-    Visited = np.array(e)
-    start = time.time()
-    end = time.time()
-    curr = Visited
-    neighbours=0
-    while (end - start < 300):
+Visited = np.array(e)
+start = time.time()
+end = time.time()
+curr = Visited
+neighbours=0
+while (time.time() - start < 50):
         p = random.random()
-        p = 0.7
+        # p = 0.4
         del neighbours
         neighbours = copy.deepcopy(curr)
-        x = np.random.randint(0, g.vertices-1)
-        y = np.random.randint(0, g.vertices-1)
-        z = np.random.randint(0, g.vertices-1)
+        x = np.random.randint(0, number)
+        y = np.random.randint(0, number)
+        z = np.random.randint(0, number)
         m = min(x, y, z)
         M = max(x, y, z)
         if p <= 0.3:  # 2 swap
@@ -299,9 +225,106 @@ try:
             neighbours[x] = neighbours[y]
             neighbours[y] = neighbours[z]
             neighbours[z] = temp
-        elif p <= 0.8:  # 3 swap
-            neighbours[m:M]= neighbours[m:M][::-1]
-        elif p <= 0.9:  # 3 swap
+        else:  # insert
+            temp = neighbours[m]
+            for i in range(m, M):
+                neighbours[i] = neighbours[i+1]
+            neighbours[M] = temp
+        if (tourCost(neighbours) -  tourCost(curr)) < 0:
+            curr = neighbours
+            print(tourCost(curr))
+            for x in neighbours:
+                pheromones[x][(x+1)%number]+=0.1
+
+print(pheromones)
+# exit(0)
+numberOfAnts = 30
+if number==100 and name=="euclidean":
+    alpha = 3
+    beta = 3
+    rho = 0.1
+    Q = 0.1
+else:
+    alpha = 40
+    beta = 40
+    rho = 0.1
+    Q = 0.1
+bestCost = float('Inf')
+bestPath = []
+
+
+
+
+# Ant Colony Optimization
+try:
+    while time.time() - start < 100:
+        allAntsPath = []
+        delta_pheromones = [[0 for x in range(number)] for y in range(number)]
+        for k in range(numberOfAnts):
+            unvisitedCities = list(range(0,number))
+            startCity = random.randint(0,number-1)
+            unvisitedCities.remove(startCity)
+            antPath = [startCity]
+            # tour of an ant
+            while len(antPath) < number:
+                i = antPath[-1]
+                # amount of pheromone and visibility determine probability
+                ph_ij = [(pheromones[i][j]**alpha * ((1/distances[i][j])**beta)) for j in unvisitedCities]
+                probList_ij = [x/sum(ph_ij) for x in ph_ij]
+                j = random.choices(unvisitedCities, weights=probList_ij)[0]
+                antPath.append(j)
+                unvisitedCities.remove(j)
+
+            allAntsPath.append(antPath)
+            c = tourCost(antPath)
+            if c < bestCost:
+                bestCost = c
+                bestPath = antPath
+                print(f"Best Cost: {c} ")
+                # print(bestPath)
+        
+        allAntsPath.sort(key=lambda ap : tourCost(ap))    
+        # top 20% tours
+        top = int(0.2*len(allAntsPath)+1)
+        for path in allAntsPath[:top]:
+            for i in range(number):
+                j = path[(i+1)%number]
+                delta_pheromones[path[i]][j] += Q / distances[path[i]][j]
+        
+        #updating pheromone concentration
+        for i in range(number):
+            for j in range(number):
+                # pheromone at t=t+1
+                pheromones[i][j] = (1-rho)*pheromones[i][j] + delta_pheromones[i][j]
+
+
+except KeyboardInterrupt as e:
+    print("Interrupted on user demand.")
+print(bestCost)
+print(bestPath)
+
+try:
+    print("Starting 2-Opt, 3-Opt and insert")
+    Visited = np.array(bestPath)
+    start = time.time()
+    end = time.time()
+    curr = Visited
+    neighbours=0
+    while (time.time() - start < 200):
+        p = random.random()
+        # p = 0.4
+        del neighbours
+        neighbours = copy.deepcopy(curr)
+        x = np.random.randint(0, number)
+        y = np.random.randint(0, number)
+        z = np.random.randint(0, number)
+        m = min(x, y, z)
+        M = max(x, y, z)
+        if p <= 0.3:  # 2 swap
+            temp = neighbours[x]
+            neighbours[x] = neighbours[y]
+            neighbours[y] = temp
+        elif p <= 0.6:  # 3 swap
             temp = neighbours[x]
             neighbours[x] = neighbours[y]
             neighbours[y] = neighbours[z]
@@ -311,17 +334,14 @@ try:
             for i in range(m, M):
                 neighbours[i] = neighbours[i+1]
             neighbours[M] = temp
-        # if (costEval(neighbours) - costEval(curr)) < (-0.1*number):
-        if (costEval(neighbours) -  costEval(curr)) < 0:
+        if (tourCost(neighbours) -  tourCost(curr)) < 0:
             curr = neighbours
-            print(costEval(curr))
+            print(tourCost(curr))
+            # print (list(curr))
         end = time.time()
 except KeyboardInterrupt:
-    print(costEval(curr), end-start)
+    print("Interrupted on user demand.")
+    # print(tourCost(curr), end-start)
 # print(*curr)
-path=curr
-
-
-    ######      run mst_chris.py file first    #######
-    ######    res list stores all euler edges  #######
-    ###### euler_tree_edges.txt contains edges #######
+print ("Best Cost : " ,tourCost(curr))
+print (list(curr))

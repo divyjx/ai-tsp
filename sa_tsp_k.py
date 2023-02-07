@@ -4,8 +4,8 @@ import sys
 import random
 import math
 import copy
-# f=open(sys.argv[1],"r")
-f=open("eu_matrix.txt","r")
+f=open(sys.argv[1],"r")
+# f=open("eu_matrix.txt","r")
 Cities=[]
 name=f.readline().rstrip("\n")
 number=int(f.readline().rstrip("\n"))

@@ -6,17 +6,13 @@ import math
 import copy
 
 
-start = time.time() 
-totaltime = 280
-
 f=open(sys.argv[1], "r")
+start = time.time() 
 # f=open("noneuc_250","r")
 Cities=[]
 name=f.readline().rstrip("\n")
 number=int(f.readline().rstrip("\n"))
-if name=="euclidian":
-    
-antTime = number - totaltime
+
 for i in range(number):
     x=f.readline().rstrip("\n").split()
     Cities.append(x)
@@ -39,18 +35,36 @@ for i in range(number):
 
 #initializations
 distances = np.array(list(map(conv,disMat)))
-pheromones = [[0.1 for i in range(number)] for j in range(number)]
-numberOfAnts = 300*(500-numberS)
+initialPheromone=10/number
+pheromones = [[(initialPheromone )for i in range(number)] for j in range(number) ]
+# for x in range(number):
+#     for y in range(number):
+#         if x!=y:
+#             pheromones[x][y]+=1/distances[x][y]
+numberOfAnts = number//10
 # if number==100 and name=="euclidean":
 #     alpha = 3
 #     beta = 3
 #     rho = 0.1
 #     Q = 0.1
-else:
-    alpha = 40
-    beta = 40
-    rho = 0.1
-    Q = 0.1
+# else:
+#     alpha = 40
+#     beta = 40
+#     rho = 0.1
+#     Q = 0.1
+alpha = 20
+beta = 20
+# rho = 0.001*number
+rho = 0.1
+# rho = (0.001*number)%1
+Q = 1
+e=0
+if name == "euclidean":
+    e=1
+antTime=(number//2 + 50)*e + 0*(not e)*280
+antTime=(number//2 + 50)
+antTime=(200)
+print(antTime)
 bestCost = float('Inf')
 bestPath = []
 
@@ -63,7 +77,7 @@ def tourCost(path):
 
 # Ant Colony Optimization
 try:
-    while time.time() - start < 100:
+    while (time.time() - start) < antTime:
         allAntsPath = []
         delta_pheromones = [[0 for x in range(number)] for y in range(number)]
         for k in range(numberOfAnts):
@@ -87,12 +101,14 @@ try:
                 bestCost = c
                 bestPath = antPath
                 print(f"Best Cost: {c} ")
-                print(bestPath)
+                # print(bestPath)
         
         allAntsPath.sort(key=lambda ap : tourCost(ap))    
         # top 20% tours
+        # top = int(0.2*len(allAntsPath)+1)
         top = int(0.2*len(allAntsPath)+1)
-        for path in allAntsPath[:top]:
+        # for path in allAntsPath[:top]:
+        for path in allAntsPath:
             for i in range(number):
                 j = path[(i+1)%number]
                 delta_pheromones[path[i]][j] += Q / distances[path[i]][j]
@@ -109,24 +125,26 @@ except KeyboardInterrupt as e:
     print(bestCost)
     print(bestPath)
 
+# print("\n",pheromones)
 try:
         print("Starting 2-Opt and 3-Opt")
         Visited = np.array(bestPath)
-        start = time.time()
+        # start = time.time()
         end = time.time()
         curr = Visited
         neighbours=0
-        while (time.time() - start < 200):
+        while (time.time() - start < 280):
             p = random.random()
-            # p = 0.4
+            p = 0.7
             del neighbours
             neighbours = copy.deepcopy(curr)
-            x = np.random.randint(0, number)
-            y = np.random.randint(0, number)
-            z = np.random.randint(0, number)
+            x = np.random.randint(0, number-1)
+            y = np.random.randint(0, number-1)
+            z = np.random.randint(0, number-1)
             m = min(x, y, z)
             M = max(x, y, z)
-            if p <= 0.3:  # 2 swap
+            num=sorted([x,y,z])
+            if p <= 0.4:  # 2 swap
                 temp = neighbours[x]
                 neighbours[x] = neighbours[y]
                 neighbours[y] = temp
@@ -135,6 +153,8 @@ try:
                 neighbours[x] = neighbours[y]
                 neighbours[y] = neighbours[z]
                 neighbours[z] = temp
+            elif p <= 0.8:  # 3 swap
+                neighbours[m:M]= neighbours[m:M][::-1]
             else:  # insert
                 temp = neighbours[m]
                 for i in range(m, M):

@@ -6,8 +6,8 @@ import time
 import copy
 
 start = time.time()
-# f=open(sys.argv[1],"r")
-f = open("eu_matrix.txt", "r")
+f=open(sys.argv[1],"r")
+# f = open("eu_matrix.txt", "r")
 Cities = []
 name = f.readline().rstrip("\n")
 number = int(f.readline().rstrip("\n"))
@@ -87,9 +87,38 @@ def costEval(node):
     return cost
 
 
-def randomNeighbour(Node):
-    p = random.permutation(np.array([i for i in range(100)]))
-    return p
+def randomNeighbour(curr):
+    neighbours = copy.deepcopy(curr)
+    x = np.random.randint(0, number-1)
+    y = np.random.randint(0, number-1)
+    z = np.random.randint(0, number-1)
+    a = np.random.randint(0, number-1)
+    b = np.random.randint(0, number-1)
+    p=random.random()
+    m = min(x, y, z)
+    M = max(x, y, z)
+    if p <= 0.3:  # 2 swap
+        temp = neighbours[x]
+        neighbours[x] = neighbours[y]
+        neighbours[y] = temp
+    elif p <= 0.6:  # 3 swap
+        temp = neighbours[x]
+        neighbours[x] = neighbours[y]
+        neighbours[y] = neighbours[z]
+        neighbours[z] = temp
+    # elif p <= 0.9:  # 3 swap
+    #     temp = neighbours[x]
+    #     neighbours[x] = neighbours[y]
+    #     neighbours[y] = neighbours[z]
+    #     neighbours[z] = neighbours[a]
+    #     neighbours[a] = neighbours[b]
+    #     neighbours[b] = temp
+    else:  # insert
+        temp = neighbours[m]
+        for i in range(m, M):
+            neighbours[i] = neighbours[i+1]
+        neighbours[M] = temp
+    return neighbours
 
 
 def Cooling(temp, time):
